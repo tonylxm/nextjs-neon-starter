@@ -1,0 +1,6 @@
+pnpm-lock.yaml
+.next
+drizzle
+src/db/auth-schema.ts
+playwright-report
+test-results
