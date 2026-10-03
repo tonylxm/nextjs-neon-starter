@@ -32,6 +32,19 @@ jobs:
           BETTER_AUTH_SECRET: ci-build-secret-ci-build-secret-0000
           BETTER_AUTH_URL: http://localhost:3000
 
+  # Private repos on personal accounts: GitHub secret scanning is a paid add-on, so scan with gitleaks.
+  # Public repos with GitHub secret scanning on can delete this job.
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3 # orgs also need env GITLEAKS_LICENSE
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 # --- .NET variant (replace steps after checkout) ---
 #     - uses: actions/setup-dotnet@v5
 #       with: { dotnet-version: 9.x }
