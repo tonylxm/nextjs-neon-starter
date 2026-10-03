@@ -15,7 +15,7 @@ Then:
 3. `docker compose up -d` for a local Postgres, then copy `.env.example` to `.env.local` and set `BETTER_AUTH_SECRET` (`openssl rand -base64 32`).
 4. `pnpm db:migrate`, then `pnpm dev` and open http://localhost:3000.
 5. In the GitHub repo settings, turn on secret scanning and push protection (templates don't copy settings).
-6. Create a Neon project (one per app). Set `DATABASE_URL` to its **pooled** connection string, plus `BETTER_AUTH_SECRET` (a new one, not the local value) and `BETTER_AUTH_URL` (the production URL), on Vercel. Run `pnpm db:migrate` with the Neon `DATABASE_URL` before the first deploy and before any deploy that adds a migration.
+6. Create a Neon project (one per app). Set `DATABASE_URL` to its **pooled** connection string with `sslmode=verify-full` (Neon's copied string says `require`, which makes `pg` print a deprecation warning), plus `BETTER_AUTH_SECRET` (a new one, not the local value) and `BETTER_AUTH_URL` (the production URL), on Vercel. Run `pnpm db:migrate` with the Neon `DATABASE_URL` before the first deploy and before any deploy that adds a migration.
 7. Import the repo in Vercel. Production deploys from `main`, and PRs get previews.
 
 **Team mode** (branch + PR, CI blocks merge): remove the hook with `pnpm remove husky lint-staged && rm -rf .husky` (keep the gitleaks CI job), delete the `prepare` and `lint-staged` entries from `package.json`, and protect `main` so it requires the CI check.
@@ -46,4 +46,4 @@ Run `pnpm exec playwright install chromium` once before the e2e tests.
 
 ## Not verified yet
 
-Sign-up, sign-out and sign-in are tested against a local Docker Postgres only, not against a hosted Neon database. Check the first Neon deploy end to end.
+Migrations, sign-up, sign-out and sign-in are tested against a local Docker Postgres and a throwaway hosted Neon project (pooled endpoint, `ap-southeast-2`) running locally. A Vercel deploy is not tested yet, so check the first one end to end.
