@@ -32,8 +32,27 @@ jobs:
           BETTER_AUTH_SECRET: ci-build-secret-ci-build-secret-0000
           BETTER_AUTH_URL: http://localhost:3000
 
-  # Private repos on personal accounts: GitHub secret scanning is a paid add-on, so scan with gitleaks.
-  # Public repos with GitHub secret scanning on can delete this job.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  # Kept for private repos created from this template: GitHub secret scanning is a paid add-on on
+  # personal accounts, so scan with gitleaks. Public repos with secret scanning on can delete this job.
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 5
