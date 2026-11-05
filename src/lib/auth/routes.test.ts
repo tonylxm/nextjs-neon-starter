@@ -8,6 +8,13 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/api/auth/sign-in/email")).toBe(true);
   });
 
+  it("allows the files crawlers and link previews fetch", () => {
+    expect(isPublicPath("/robots.txt")).toBe(true);
+    expect(isPublicPath("/sitemap.xml")).toBe(true);
+    expect(isPublicPath("/opengraph-image")).toBe(true);
+    expect(isPublicPath("/twitter-image")).toBe(true);
+  });
+
   it("protects everything else by default", () => {
     expect(isPublicPath("/account")).toBe(false);
     expect(isPublicPath("/login-help")).toBe(false);
