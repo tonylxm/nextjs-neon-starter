@@ -45,6 +45,6 @@ Run `pnpm exec playwright install chromium` once before the e2e tests.
 - A pre-commit hook that runs gitleaks on staged files (install it once with `brew install gitleaks`), then lint-staged (auto-fix only, no tests). CI has a matching `secrets` job. Both assume a private repo on a personal account. For a public repo, turn on GitHub secret scanning and push protection instead, and delete the `secrets` job and the two gitleaks lines in `.husky/pre-commit`.
 - `AGENTS.md` holds only the Next.js agent rules block. project-starter's agents-md step fills in the rest.
 
-## Not verified yet
+## Known issues
 
-Sign-up, sign-out and sign-in pass on Node against Docker Postgres (e2e) and in `pnpm preview` (local `workerd`). A real Cloudflare deploy against Neon is not tested yet. In `workerd`, `pg-cloudflare` 1.4.1 logs `unhandledRejection: This socket has been closed` when a connection closes; requests still succeed. If it is noisy or slow in production, move to Cloudflare Hyperdrive.
+Verified on Node against Docker Postgres (e2e), in `pnpm preview` (local `workerd`), and on a real Cloudflare deploy against Neon (sign-up, sign-out, sign-in). In `workerd`, `pg-cloudflare` 1.4.1 logs `unhandledRejection: This socket has been closed` on every database request, locally and in production; requests still succeed. Each database request opens a new connection to Neon, about 0.5 to 1 s per request. Cloudflare Hyperdrive would pool connections and likely fix both.
