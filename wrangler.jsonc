@@ -9,4 +9,13 @@
     "binding": "ASSETS",
   },
   "observability": { "enabled": true },
+  // Create one per client database: wrangler hyperdrive create <name> --connection-string="<Neon direct URL>" --caching-disabled
+  // localConnectionString is used by `pnpm preview` and points at the docker-compose database.
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000",
+      "localConnectionString": "postgres://postgres:postgres@localhost:5432/app",
+    },
+  ],
 }
