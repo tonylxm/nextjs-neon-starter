@@ -4,7 +4,7 @@ import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { LOGIN_PATH, SIGNED_IN_PATH } from "@/lib/auth/routes";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -37,11 +37,11 @@ export async function authenticate(
   const { email, password, intent } = parsed.data;
   try {
     if (intent === "sign-in") {
-      await auth.api.signInEmail({ body: { email, password } });
+      await getAuth().api.signInEmail({ body: { email, password } });
     } else {
       // Better Auth requires a display name, so use the part before the @ until the app collects one.
       const name = email.split("@")[0];
-      await auth.api.signUpEmail({ body: { email, password, name } });
+      await getAuth().api.signUpEmail({ body: { email, password, name } });
     }
   } catch (error) {
     if (error instanceof APIError) {
@@ -53,6 +53,6 @@ export async function authenticate(
 }
 
 export async function signOut(): Promise<void> {
-  await auth.api.signOut({ headers: await headers() });
+  await getAuth().api.signOut({ headers: await headers() });
   redirect(LOGIN_PATH);
 }

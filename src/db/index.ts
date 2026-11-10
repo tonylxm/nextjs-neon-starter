@@ -1,13 +1,13 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { cache } from "react";
 import * as schema from "./schema";
 
-// Dev hot reloads re-run this module, so reuse one pool or each reload leaks connections.
-const globalForDb = globalThis as unknown as { pool?: Pool };
-const pool =
-  globalForDb.pool ?? new Pool({ connectionString: process.env.DATABASE_URL });
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.pool = pool;
-}
-
-export const db = drizzle(pool, { schema });
+// Cloudflare Workers can't reuse a socket across requests, so each request gets its own pool, and
+// maxUses: 1 closes every connection after one use instead of returning it for another request.
+export const getDb = cache(() =>
+  drizzle(
+    new Pool({ connectionString: process.env.DATABASE_URL, maxUses: 1 }),
+    { schema },
+  ),
+);

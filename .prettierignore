@@ -4,3 +4,5 @@ drizzle
 src/db/auth-schema.ts
 playwright-report
 test-results
+.open-next
+.wrangler

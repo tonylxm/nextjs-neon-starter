@@ -1,13 +1,13 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { LOGIN_PATH } from "@/lib/auth/routes";
 import { signOut } from "../login/actions";
 
 // The proxy's redirect is only an optimistic check, so pages that show user data verify again.
 export default async function AccountPage(): Promise<React.JSX.Element> {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session) {
     redirect(LOGIN_PATH);
   }
