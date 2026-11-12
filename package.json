@@ -16,7 +16,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy": "NEXT_PUBLIC_SITE_ENV=production opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

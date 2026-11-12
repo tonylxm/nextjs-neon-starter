@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getAuth } from "@/lib/auth";
 import { LOGIN_PATH } from "@/lib/auth/routes";
 import { signOut } from "../login/actions";
+
+export const metadata: Metadata = {
+  title: "Account",
+  robots: { index: false, follow: false },
+};
 
 // The proxy's redirect is only an optimistic check, so pages that show user data verify again.
 export default async function AccountPage(): Promise<React.JSX.Element> {
