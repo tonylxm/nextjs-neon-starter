@@ -9,7 +9,15 @@ const CRAWLER_PATHS: readonly string[] = [
   "/twitter-image",
 ];
 
-const PUBLIC_PATHS: readonly string[] = ["/", LOGIN_PATH, ...CRAWLER_PATHS];
+// The deploy job's smoke check; a redirect to login would pass `curl -f` without reaching the app.
+const HEALTH_PATH = "/api/health";
+
+const PUBLIC_PATHS: readonly string[] = [
+  "/",
+  LOGIN_PATH,
+  HEALTH_PATH,
+  ...CRAWLER_PATHS,
+];
 const PUBLIC_PREFIXES: readonly string[] = ["/api/auth/"];
 
 export function isPublicPath(pathname: string): boolean {

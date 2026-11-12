@@ -15,6 +15,10 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/twitter-image")).toBe(true);
   });
 
+  it("allows the health check the deploy smoke test fetches", () => {
+    expect(isPublicPath("/api/health")).toBe(true);
+  });
+
   it("protects everything else by default", () => {
     expect(isPublicPath("/account")).toBe(false);
     expect(isPublicPath("/login-help")).toBe(false);

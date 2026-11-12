@@ -17,7 +17,17 @@ Then:
 5. In the GitHub repo settings, turn on secret scanning and push protection (templates don't copy settings).
 6. Create a Neon project (one per app). Run `pnpm db:migrate` with its connection string as `DATABASE_URL` (change `sslmode=require` to `sslmode=verify-full`, or `pg` prints a deprecation warning) before the first deploy and before any deploy that adds a migration.
 7. `pnpm exec wrangler login`, then create a Hyperdrive config from Neon's **direct** (non-pooler) connection string, since Hyperdrive does the pooling: `pnpm exec wrangler hyperdrive create <app> --connection-string="<url>" --caching-disabled`. Put its `id` in `wrangler.jsonc` (replacing the zeros) and set `name` there. Caching stays off because Hyperdrive doesn't clear cached reads after a write, which would serve stale sessions.
-8. `pnpm run deploy`. Add the secrets once with `pnpm exec wrangler secret put <NAME>` for `BETTER_AUTH_SECRET` (a new one, not the local value) and `BETTER_AUTH_URL` (the production URL), then deploy again. The Worker gets the database from the Hyperdrive binding, so it needs no `DATABASE_URL` secret. For deploys on push, connect the repo in the Cloudflare dashboard (Workers Builds) with `pnpm run deploy` as the deploy command. Roll back with `pnpm exec wrangler rollback`.
+8. `pnpm run deploy`. Add the secrets once with `pnpm exec wrangler secret put <NAME>` for `BETTER_AUTH_SECRET` (a new one, not the local value) and `BETTER_AUTH_URL` (the production URL), then deploy again. The Worker gets the database from the Hyperdrive binding, so it needs no `DATABASE_URL` secret. Roll back with `pnpm exec wrangler rollback`.
+9. Production deploys from CI: the `deploy` job in `.github/workflows/ci.yml` runs on push to `main` once the `ci` and `e2e` jobs are green. It runs `pnpm db:migrate` against Neon, then `pnpm run deploy`, then curls `/api/health` (public, no database call). In the GitHub repo settings (Secrets and variables → Actions) add:
+
+   | Name                    | Kind     | Value                                                                                  |
+   | ----------------------- | -------- | -------------------------------------------------------------------------------------- |
+   | `CLOUDFLARE_API_TOKEN`  | Secret   | API token with the "Edit Cloudflare Workers" template                                  |
+   | `CLOUDFLARE_ACCOUNT_ID` | Secret   | Account ID from the Cloudflare dashboard                                               |
+   | `DATABASE_URL`          | Secret   | Neon **direct** connection string with `sslmode=verify-full`, used only for migrations |
+   | `PRODUCTION_URL`        | Variable | The health route the smoke check fetches, e.g. `https://example.com/api/health`        |
+
+   Migrations run before the new code is live, so they must work with the code already running (expand and contract). If the repo is connected to Workers Builds, turn off its production deploy on push (keep it for branch previews only), or `main` deploys without the CI gate and before migrations.
 
 **Team mode** (branch + PR, CI blocks merge): remove the hook with `pnpm remove husky lint-staged && rm -rf .husky` (keep the gitleaks CI job), delete the `prepare` and `lint-staged` entries from `package.json`, and protect `main` so it requires the CI check.
 
