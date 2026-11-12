@@ -75,7 +75,8 @@ jobs:
   # To release on a chosen date instead: replace the `if:` with `if: github.event_name == 'workflow_dispatch'` and add `workflow_dispatch:` under `on:`.
   deploy:
     needs: [ci, e2e]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Skipped until the project sets its PRODUCTION_URL variable (Phase 0 task 0.6), so template repos stay green.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PRODUCTION_URL != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
