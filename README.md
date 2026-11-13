@@ -16,17 +16,18 @@ Then:
 4. `pnpm db:migrate`, then `pnpm dev` and open http://localhost:3000.
 5. In the GitHub repo settings, turn on secret scanning and push protection (templates don't copy settings).
 6. Create a Neon project (one per app, Postgres 18 to match `docker-compose.yml`). Run `pnpm db:migrate` with its connection string as `DATABASE_URL` (change `sslmode=require` to `sslmode=verify-full`, or `pg` prints a deprecation warning) before the first deploy and before any deploy that adds a migration.
-7. `pnpm exec wrangler login`, then create a Hyperdrive config from Neon's **direct** (non-pooler) connection string, since Hyperdrive does the pooling: `pnpm exec wrangler hyperdrive create <app> --connection-string="<url>" --caching-disabled`. Put its `id` in `wrangler.jsonc` (replacing the zeros) and set `name` there. Caching stays off because Hyperdrive doesn't clear cached reads after a write, which would serve stale sessions.
+   Then create the runtime role once, as that owner: `psql "$DATABASE_URL" -f db/app-worker.sql`, then `psql "$DATABASE_URL" -c '\password app_worker'`. It gets data access only (no DDL) and covers tables that later migrations create. Make it with this script, not the Neon console: console roles join `neon_superuser`, which bypasses RLS. Roles, grants and extensions stay out of `drizzle/`.
+7. `pnpm exec wrangler login`, then create a Hyperdrive config from Neon's **direct** (non-pooler) connection string for the `app_worker` role (not the owner), since Hyperdrive does the pooling: `pnpm exec wrangler hyperdrive create <app> --connection-string="<url>" --caching-disabled`. Put its `id` in `wrangler.jsonc` (replacing the zeros) and set `name` there. Caching stays off because Hyperdrive doesn't clear cached reads after a write, which would serve stale sessions.
 8. Set `NEXT_PUBLIC_SITE_URL` in `.env.local` to the production URL (the deploy build fails without it), then `pnpm run deploy`. Add the secrets once with `pnpm exec wrangler secret put <NAME>` for `BETTER_AUTH_SECRET` (a new one, not the local value) and `BETTER_AUTH_URL` (the production URL), then deploy again. The Worker gets the database from the Hyperdrive binding, so it needs no `DATABASE_URL` secret. Roll back with `pnpm exec wrangler rollback`.
 9. Production deploys from CI: the `deploy` job in `.github/workflows/ci.yml` runs on push to `main` once the `ci` and `e2e` jobs are green. It runs `pnpm db:migrate` against Neon, then `pnpm run deploy`, then curls `/api/health` (public, no database call). In the GitHub repo settings (Secrets and variables → Actions) add:
 
-   | Name                    | Kind     | Value                                                                                  |
-   | ----------------------- | -------- | -------------------------------------------------------------------------------------- |
-   | `CLOUDFLARE_API_TOKEN`  | Secret   | API token with the "Edit Cloudflare Workers" template                                  |
-   | `CLOUDFLARE_ACCOUNT_ID` | Secret   | Account ID from the Cloudflare dashboard                                               |
-   | `DATABASE_URL`          | Secret   | Neon **direct** connection string with `sslmode=verify-full`, used only for migrations |
-   | `PRODUCTION_URL`        | Variable | The health route the smoke check fetches, e.g. `https://example.com/api/health`        |
-   | `SITE_URL`              | Variable | The production URL without a trailing slash, e.g. `https://example.com`                |
+   | Name                    | Kind     | Value                                                                                        |
+   | ----------------------- | -------- | -------------------------------------------------------------------------------------------- |
+   | `CLOUDFLARE_API_TOKEN`  | Secret   | API token with the "Edit Cloudflare Workers" template                                        |
+   | `CLOUDFLARE_ACCOUNT_ID` | Secret   | Account ID from the Cloudflare dashboard                                                     |
+   | `DATABASE_URL`          | Secret   | Neon **direct** owner connection string with `sslmode=verify-full`, used only for migrations |
+   | `PRODUCTION_URL`        | Variable | The health route the smoke check fetches, e.g. `https://example.com/api/health`              |
+   | `SITE_URL`              | Variable | The production URL without a trailing slash, e.g. `https://example.com`                      |
 
    Migrations run before the new code is live, so they must work with the code already running (expand and contract). If the repo is connected to Workers Builds, turn off its production deploy on push (keep it for branch previews only), or `main` deploys without the CI gate and before migrations.
 
