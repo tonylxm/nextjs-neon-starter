@@ -38,7 +38,7 @@ jobs:
     # The sign-in journey needs a real, migrated Postgres (matches docker-compose.yml).
     services:
       db:
-        image: postgres:17
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
