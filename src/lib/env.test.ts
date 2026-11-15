@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseEnv } from "./env";
 
 const validEnv = {
-  DATABASE_URL: "postgres://postgres:postgres@localhost:5432/app",
+  DATABASE_URL: "postgres://postgres:postgres@localhost:5433/app",
   BETTER_AUTH_SECRET: "x".repeat(32),
   BETTER_AUTH_URL: "http://localhost:3000",
 };

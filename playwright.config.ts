@@ -9,7 +9,7 @@ export default defineConfig({
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
     env: {
-      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/app",
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5433/app",
       BETTER_AUTH_SECRET: "e2e-secret-e2e-secret-e2e-secret-00",
       BETTER_AUTH_URL: "http://localhost:3100",
     },

@@ -28,7 +28,7 @@ jobs:
       - run: pnpm test
       - run: pnpm build
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/app
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/app
           BETTER_AUTH_SECRET: ci-build-secret-ci-build-secret-0000
           BETTER_AUTH_URL: http://localhost:3000
 
@@ -44,7 +44,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: app
         ports:
-          - 5432:5432
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 5s
@@ -61,7 +61,7 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm db:migrate
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/app
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/app
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -100,7 +100,7 @@ jobs:
       # Build-time placeholders as in the ci job; the Worker reads its real secrets and Hyperdrive at runtime.
       - run: pnpm run deploy
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/app
+          DATABASE_URL: postgres://postgres:postgres@localhost:5433/app
           BETTER_AUTH_SECRET: ci-build-secret-ci-build-secret-0000
           BETTER_AUTH_URL: http://localhost:3000
           NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
