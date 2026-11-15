@@ -2,16 +2,16 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "e2e",
-  use: { baseURL: "http://localhost:3000" },
+  use: { baseURL: "http://localhost:3100" },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "pnpm build && pnpm start",
-    url: "http://localhost:3000",
+    command: "pnpm build && pnpm start -p 3100",
+    url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
     env: {
       DATABASE_URL: "postgres://postgres:postgres@localhost:5432/app",
       BETTER_AUTH_SECRET: "e2e-secret-e2e-secret-e2e-secret-00",
-      BETTER_AUTH_URL: "http://localhost:3000",
+      BETTER_AUTH_URL: "http://localhost:3100",
     },
   },
 });

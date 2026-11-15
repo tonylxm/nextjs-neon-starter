@@ -35,14 +35,14 @@ Then:
 
 ## Scripts
 
-| Script                                           | Does                                                                                                                  |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `dev` / `build` / `start`                        | Next.js on Node, for development and the e2e tests                                                                    |
-| `preview` / `deploy`                             | Build for Workers with OpenNext, then run it locally in `workerd` (reads `.dev.vars`) or deploy it                    |
-| `lint` / `format` / `format:check` / `typecheck` | ESLint, Prettier, `next typegen && tsc --noEmit` (route types live in gitignored `.next/`)                            |
-| `test`                                           | Vitest (unit and component)                                                                                           |
-| `test:e2e`                                       | Playwright: smoke tests plus a real sign-up and sign-in. Needs the local Postgres up and migrated, and port 3000 free |
-| `db:generate` / `db:migrate`                     | Drizzle: create a migration from `src/db/schema.ts`, apply committed migrations to `DATABASE_URL`                     |
+| Script                                           | Does                                                                                               |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `dev` / `build` / `start`                        | Next.js on Node, for development and the e2e tests                                                 |
+| `preview` / `deploy`                             | Build for Workers with OpenNext, then run it locally in `workerd` (reads `.dev.vars`) or deploy it |
+| `lint` / `format` / `format:check` / `typecheck` | ESLint, Prettier, `next typegen && tsc --noEmit` (route types live in gitignored `.next/`)         |
+| `test`                                           | Vitest (unit and component)                                                                        |
+| `test:e2e`                                       | Playwright: smoke tests plus a real sign-up and sign-in. Needs the local Postgres up and migrated  |
+| `db:generate` / `db:migrate`                     | Drizzle: create a migration from `src/db/schema.ts`, apply committed migrations to `DATABASE_URL`  |
 
 Run `pnpm exec playwright install chromium` once before the e2e tests.
 
